@@ -1,0 +1,90 @@
+-- SQLBook: Code
+/* 1.  What are the column names for each table? */
+
+SELECT * FROM stream
+LIMIT 20;
+
+SELECT * FROM chat
+LIMIT 20;
+
+/* Answer: 
+
+stream (time, device_id, login, channel, country, player, game, stream_format, subscriber)
+chat (time, device_id, login, channel, country, player, game)
+
+2. What are the unique games in the stream table? */
+
+SELECT DISTINCT game FROM stream;
+
+/* Answer: League of Legends, DayZ, Dota 2, Heroes of the Storm, Counter-Strike: Global Offensive, Hearthstone: Heroes of Warcraft, The Binding of Isaac: Rebirth, Agar.io, etc.
+
+3. What are the unique channel in the stream table */
+
+SELECT DISTINCT channel FROM stream;
+
+/* frank, george, estelle, morty, kramer, jerry, helen, newman, elaine, susan
+
+4. What are the most popular games in the stream table? */
+
+SELECT game, COUNT(login) AS 'viewers'
+FROM stream
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 5;
+
+/* Answer: Top 5 games are League of Legends, Dota 2, Counter Strike: Global Offensive, DayZ, Heroes of the Storm.
+
+5. Where are the League of Legends Stream viewers Located? */
+
+SELECT country, COUNT(country) AS viewer_location
+FROM stream
+WHERE game = 'League of Legends'
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 5;
+
+/* Answer: US, DE, CA, GB, TR
+
+6. Create a list of players and their number of streamers? */
+
+SELECT player, COUNT(*) AS number_of_streamers
+FROM stream
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 5;
+
+/*Answer: site = 1365, iphone_t = 622, android = 547
+
+7. Create a column named genre for each of the games */
+
+SELECT game,
+  CASE
+    WHEN game = 'League of Legends' THEN 'MOBA'
+    WHEN game = 'Dota 2' THEN 'MOBA'
+    WHEN game = 'Heroes of the Strom' THEN 'Moba'
+    WHEN game = 'Counter-Strike: Global Offensive' THEN 'FPS'
+    WHEN game = 'DayZ' THEN 'Survival'
+    WHEN game = 'ARK: Survival Evolved' THEN 'Survival'
+    Else 'Other'
+    END AS genre,
+  COUNT(*) AS stream_view
+FROM stream
+GROUP BY 1
+ORDER BY 3 DESC;
+
+/* Answer : League of Legends = 1070, Dota 2 = 472, Counter Strike: Global Offensive = 302
+
+8. Return 2 coloumns (hours of the time column, the view count for each hour) and filter results in your country. */
+
+SELECT strftime('%H', time) AS hours_of_time, COUNT(*) AS views
+FROM stream
+WHERE country = 'US'
+GROUP BY 1;
+
+/* 9. Join the stream and chat tables. */
+
+SELECT * 
+FROM stream AS s
+JOIN chat AS c
+  ON s.device_id = c.device_id
+LIMIT 10; 
